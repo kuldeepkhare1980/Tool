@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A responsive image compression tool that allows users to optimize images efficiently.">
+    <title>Image Compression Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .compressor {
+            margin: 20px 0;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .ads {
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f1f1f1;
+            width: 100%;
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #result img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        #result a {
+            display: block;
+            margin-top: 10px;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        #result a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Image Compression Tool</h1>
+    </header>
+    <main>
+        <section class="compressor">
+            <input type="file" id="imageInput" accept="image/*" multiple>
+            <label for="compressionLevel">Select Compression Level: <span id="compressionValue">50</span>%</label>
+            <input type="range" id="compressionLevel" min="0" max="100" value="50">
+            <button id="compressButton">Compress Images</button>
+            <div id="result"></div>
+        </section>
+        <aside class="ads">
+            <!-- Google AdSense Code -->
+            <ins class="adsbygoogle"
+                style="display:block"
+                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                data-ad-slot="XXXXXXXXXX"
+                data-ad-format="auto"
+                data-full-width-responsive="true"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </aside>
+    </main>
+    <footer>
+        <p>&copy; 2025 Image Compression Tool. All rights reserved.</p>
+    </footer>
+    <script>
+        // Update compression level value dynamically
+        document.getElementById('compressionLevel').addEventListener('input', function () {
+            document.getElementById('compressionValue').textContent = this.value;
+        });
+
+        // Compress images when the button is clicked
+        document.getElementById('compressButton').addEventListener('click', function () {
+            const input = document.getElementById('imageInput');
+            const compressionLevel = document.getElementById('compressionLevel').value;
+            const resultDiv = document.getElementById('result');
+
+            if (input.files.length === 0) {
+                alert('Please select images to compress.');
+                return;
+            }
+
+            resultDiv.innerHTML = '<p>Compressing images... Please wait.</p>';
+
+            Array.from(input.files).forEach(file => {
+                if (!file.type.startsWith('image/')) {
+                    alert('Please upload only image files.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        const width = img.width;
+                        const height = img.height;
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        // Draw image on canvas
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Compress the image
+                        const compressedImage = canvas.toDataURL('image/jpeg', compressionLevel / 100);
+
+                        // Display compressed image
+                        const imgElement = document.createElement('img');
+                        imgElement.src = compressedImage;
+                        imgElement.style.maxWidth = '100%';
+                        imgElement.style.marginTop = '10px';
+                        resultDiv.appendChild(imgElement);
+
+                        // Display file sizes
+                        const originalSize = (file.size / 1024).toFixed(2); // in KB
+                        const compressedSize = (compressedImage.length / 1024).toFixed(2); // in KB
+                        const sizeInfo = document.createElement('p');
+                        sizeInfo.textContent = `Original: ${originalSize} KB | Compressed: ${compressedSize} KB`;
+                        resultDiv.appendChild(sizeInfo);
+
+                        // Add download link
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = compressedImage;
+                        downloadLink.download = `compressed_${file.name}`;
+                        downloadLink.textContent = 'Download Compressed Image';
+                        downloadLink.style.display = 'block';
+                        downloadLink.style.marginTop = '10px';
+                        resultDiv.appendChild(downloadLink);
+                    };
+                };
+                reader.onerror = function () {
+                    alert('Error reading the file. Please try again.');
+                };
+                reader.readAsDataURL(file);
+            });
+
+            resultDiv.innerHTML += '<p>Compression complete!</p>';
+        });
+    </script>
+</body>
+
+</html>

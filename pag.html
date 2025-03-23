@@ -1,0 +1,127 @@
+html
+ Copy code
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A responsive image compression tool that allows users to optimize images efficiently.">
+    <title>Image Compression Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .compressor {
+            margin: 20px 0;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .ads {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f1f1f1;
+        }
+
+        #result img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Image Compression Tool</h1>
+    </header>
+    <main>
+        <section class="compressor">
+            <input type="file" id="imageInput" accept="image/*" multiple>
+            <label for="compressionLevel">Select Compression Level:</label>
+            <input type="range" id="compressionLevel" min="0" max="100" value="50">
+            <button id="compressButton">Compress Images</button>
+            <div id="result"></div>
+        </section>
+        <aside class="ads">
+            <!-- Google AdSense Code -->
+            <ins class="adsbygoogle"
+                style="display:block"
+                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" <!-- Replace with your AdSense client ID -->
+                data-ad-slot="XXXXXXXXXX" <!-- Replace with your AdSense slot ID -->
+                data-ad-format="auto"></ins>
+        </aside>
+    </main>
+    <footer>
+        <p>&copy; 2025 Image Compression Tool. All rights reserved.</p>
+    </footer>
+    <script>
+        document.getElementById('compressButton').addEventListener('click', function () {
+            const input = document.getElementById('imageInput');
+            const compressionLevel = document.getElementById('compressionLevel').value;
+            const resultDiv = document.getElementById('result');
+
+            if (input.files.length === 0) {
+                alert('Please select images to compress.');
+                return;
+            }
+
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        const width = img.width;
+                        const height = img.height;
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        // Draw image on canvas
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Compress the image
+                        const compressedImage = canvas.toDataURL('image/jpeg', compressionLevel / 100);
+
+                        // Display compressed image
+                        const imgElement = document.createElement('img');
+                        imgElement.src = compressedImage;
+                        resultDiv.appendChild(imgElement);
+                    };
+                    img.onerror = function () {
+                        alert('Error loading image.');

@@ -1,0 +1,134 @@
+The "499" error generally indicates that the client (your browser) closed the connection before the server could respond. In a local development environment, this could be caused by several issues. Here’s how to troubleshoot and effectively run the image compression tool:
+
+### Troubleshooting Steps
+
+1. **Run on a Local Server**:
+   - If you are running the HTML file directly by double-clicking it, try using a local server instead. Here are a few easy ways to set one up:
+
+   **Using Python**:
+   - If you have Python installed, you can start a simple HTTP server. Open your terminal or command prompt, navigate to the folder where your HTML file is located, and run:
+     - For Python 3:
+       ```bash
+       python -m http.server
+       ```
+       Then, open your web browser and go to `http://localhost:8000`.
+   
+   **Using Live Server in Visual Studio Code**:
+   - If you use Visual Studio Code:
+     - Install the "Live Server" extension from the Extensions Marketplace.
+     - Open your HTML file in VS Code, right-click in the editor, and select "Open with Live Server."
+
+2. **Check the HTML Code**:
+   - Ensure there are no syntax errors in the HTML, especially in the JavaScript part. Below is the complete working HTML code again for reference:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A responsive image compression tool that allows users to optimize images efficiently.">
+    <title>Image Compression Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .compressor {
+            margin: 20px 0;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f1f1f1;
+        }
+        #result img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Image Compression Tool</h1>
+    </header>
+    <main>
+        <section class="compressor">
+            <input type="file" id="imageInput" accept="image/*" multiple>
+            <label for="compressionLevel">Select Compression Level:</label>
+            <input type="range" id="compressionLevel" min="0" max="100" value="50">
+            <button id="compressButton">Compress Images</button>
+            <div id="result"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Image Compression Tool. All rights reserved.</p>
+    </footer>
+    <script>
+        document.getElementById('compressButton').addEventListener('click', function () {
+            const input = document.getElementById('imageInput');
+            const compressionLevel = document.getElementById('compressionLevel').value;
+            const resultDiv = document.getElementById('result');
+
+            if (input.files.length === 0) {
+                alert('Please select images to compress.');
+                return;
+            }
+
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        const width = img.width;
+                        const height = img.height;
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        // Draw image on canvas
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Compress the image
+                        const compressedImage = canvas.toDataURL('image/jpeg', compressionLevel / 100);
+
+                        // Display compressed image
+                        const imgElement = document.createElement('img');
+                        imgElement.src = compressedImage;
+                        resultDiv.appendChild(imgElement);
+                    };
+                    img.onerror = function () {
+                        alert('Error loading image.');
+                    };
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
+</body>
+</html>
+``
